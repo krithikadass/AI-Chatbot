@@ -24,6 +24,12 @@ cd path to folder
 # Step 3: Run the chatbot
 python chatbot.py
 
+## OUTPUT :
+
+Sample output tested locally
+
+![output.png]
+
 ## RESULT :
 
 Therfore the chatbot was successfully created and executed successfully.
