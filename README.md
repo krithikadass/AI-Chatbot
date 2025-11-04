@@ -28,7 +28,7 @@ python chatbot.py
 
 Sample output tested locally
 
-![output.png]
+![alt text](image.png)
 
 ## RESULT :
 
