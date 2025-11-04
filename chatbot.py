@@ -1,57 +1,40 @@
-# chatbot_simple.py
-from sentence_transformers import SentenceTransformer, util
 
-# Load a small embedding model (works offline after download)
-model = SentenceTransformer('all-MiniLM-L6-v2')
 
-# Simple knowledge base
-knowledge_base = {
-    "leave policy": "Employees can take 12 casual leaves and 10 earned leaves per year.",
-    "salary slip": "You can download your salary slip from the HR portal.",
+print("Company Chatbot")
+print("Type 'exit' to quit.\n")
+responses = {
+    "leave": "Employees can take 12 casual and 10 earned leaves per year.",
+    "salary": "Salary slips can be downloaded from the HR portal.",
     "work from home": "Work from home is allowed two days a week with manager approval.",
-    "internet issue": "Please contact the IT helpdesk at it_support@example.com.",
-    "password reset": "Use the company portal and click 'Forgot Password' to reset it.",
-    "company event": "The next company event is the Annual Day in December.",
-    "holiday list": "You can view the official holiday list on the HR website.",
-    "attendance": "Attendance must be marked daily before 10 AM."
+    "internet": "Please contact the IT helpdesk at it_support@example.com.",
+    "password": "Go to the company portal and click 'Forgot Password' to reset it.",
+    "event": "The next company event is the Annual Day in December.",
+    "holiday": "You can view the official holiday list on the HR website.",
+    "attendance": "Attendance must be marked before 10 AM daily."
 }
 
-# Profanity filter
 bad_words = ["stupid", "damn", "bloody"]
 
-def clean_message(msg):
-    words = msg.split()
+def clean_message(message):
+    """Replace bad words with stars"""
+    words = message.split()
     for i, w in enumerate(words):
         if w.lower() in bad_words:
             words[i] = "*" * len(w)
     return " ".join(words)
 
-# Precompute embeddings for the knowledge base
-kb_questions = list(knowledge_base.keys())
-kb_embeddings = model.encode(kb_questions, convert_to_tensor=True)
-
-print("🤖 Simple Employee Chatbot")
-print("Type 'exit' to stop.\n")
-
 while True:
-    user_input = input("You: ").strip()
-    if user_input.lower() == "exit":
-        print("Chatbot: Goodbye!")
+    user = input("You: ").strip().lower()
+    if user == "exit":
+        print("Chatbot: Goodbye! Have a nice day 👋")
         break
+    user = clean_message(user)
+    found = False
+    for key in responses:
+        if key in user:
+            print("Chatbot:", responses[key])
+            found = True
+            break
 
-    # Clean profanity
-    user_input = clean_message(user_input)
-
-    # Compute similarity to each known question
-    query_embedding = model.encode(user_input, convert_to_tensor=True)
-    scores = util.cos_sim(query_embedding, kb_embeddings)[0]
-    best_match = scores.argmax().item()
-    best_score = scores[best_match].item()
-
-    # Confidence threshold
-    if best_score > 0.55:
-        response = knowledge_base[kb_questions[best_match]]
-    else:
-        response = "I'm not sure about that. Please contact HR or IT support."
-
-    print(f"Chatbot: {response}\n")
+    if not found:
+        print("Chatbot: Sorry, I don’t have an answer for that. Please contact HR or IT support.")
